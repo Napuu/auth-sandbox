@@ -6,8 +6,8 @@
     [ring.util.response :refer [status]])
   (:gen-class))
 
-(def whitelisted-ips
-  (let [t  (or (env :whitelisted-ips) "")]
+(def whitelisted-countries
+  (let [t  (or (env :whitelisted-countries) "")]
     (set (str/split (or t "")  #","))))
 
 (defn now [] (new java.util.Date))
@@ -19,8 +19,8 @@
   (fn [request]
     (and is-debug (prn (now) request))
     (let [{headers :headers} request
-          {real-ip "cf-connecting-ip"} headers]
-      (status (if (contains? whitelisted-ips real-ip) 200 401)))))
+          {country "cf-ipcountry"} headers]
+      (status (if (contains? whitelisted-countries country) 200 401)))))
 
 (defn -main [& _]
   (run-jetty app {:port 3000}))
